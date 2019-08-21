@@ -2,30 +2,16 @@
 
 namespace TinyPixel\SiteHealth;
 
-use TinyPixel\SiteHealth\Concerns\WordPress;
-use TinyPixel\SiteHealth\Info;
-use TinyPixel\SiteHealth\Tests;
-
 /**
- * Site health.
+ * Site Report Manager.
+ *
  */
-class SiteHealth
+class SiteReportManager
 {
-    use WordPress;
-
     /**
-     * Invoke.
+     * Info
      */
-    public function __invoke()
-    {
-        $this->mappings();
-        $this->accessors();
-
-        $this->info  = new Info();
-        $this->tests = new Tests();
-
-        \add_filter('site_status_tests', [$this->tests, 'suites']);
-    }
+    protected $info;
 
     /**
      * WordPress hooks.
@@ -33,11 +19,9 @@ class SiteHealth
      * @param  array $info
      * @return array
      */
-    public function debugInfo(array $info) : array
+    public function debugInfo() : array
     {
-        $info = [];
-
-        $info['theme'] = $this->themeInfo($this->refs['getTheme']());
+        $this->info['theme'] = $this->themeInfo($this->refs['getTheme']());
 
         return $info;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace TinyPixel\SiteHealth\Concerns;
+namespace TinyPixel\SiteHealth\Audits\Concerns;
 
 trait Checks
 {
@@ -22,7 +22,7 @@ trait Checks
      * @param  string $test
      * @return bool
      */
-    protected function shouldTest(string $test) : bool
+    protected function shouldAudit(string $test) : bool
     {
         return true;
     }

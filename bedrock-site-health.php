@@ -20,4 +20,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-(new TinyPixel\SiteHealth\SiteHealth())();
+$siteHealth = new TinyPixel\SiteHealth\Plugin();
+$siteHealth->boot();
+$siteHealth->run();

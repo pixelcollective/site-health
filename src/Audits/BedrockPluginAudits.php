@@ -3,6 +3,7 @@
 namespace TinyPixel\SiteHealth\Audits;
 
 use TinyPixel\SiteHealth\Audits\Concerns\Checks;
+use TinyPixel\SiteHealth\Audits\AuditBuilder;
 
 /**
  * Tests: Bedrock plugins.
@@ -27,19 +28,22 @@ class BedrockPluginAudits
     public $auditBuilder;
 
     /**
+     * Constructor.
      *
      */
-    public function __construct(\TinyPixel\SiteHealth\Audits\AuditBuilder $auditBuilder)
+    public function __construct(AuditBuilder $auditBuilder)
     {
         $this->builder = $auditBuilder;
+
+        return $this;
     }
 
     /**
-     * Invoke
+     * Run audits and return arrayed results.
      *
      * @return array
      */
-    public function __invoke() : array
+    public function run(array $results = [])
     {
         if ($this->shouldAudit('disallow-indexing') == true) {
             $results['disallow-indexing'] = [

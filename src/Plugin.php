@@ -6,6 +6,11 @@ use function DI\get;
 use function DI\autowire;
 use DI\Container;
 use DI\ContainerBuilder;
+use TinyPixel\SiteHealth\AuditManager;
+use TinyPixel\SiteHealth\ReportManager;
+use TinyPixel\SiteHealth\HealthManager;
+use TinyPixel\SiteHealth\Audits\AuditBuilder;
+use TinyPixel\SiteHealth\Audits\BedrockPluginAudits;
 
 /**
  * Plugin runtime
@@ -28,6 +33,23 @@ class Plugin
     protected $container;
 
     /**
+     * Audits
+     *
+     * @param array
+     */
+    protected $audits = [
+        'direct' => ['audits.bedrock.plugins'],
+        'async'  => null,
+    ];
+
+    /**
+     * Reports
+     *
+     * @param array
+     */
+    protected $reports = [];
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -40,7 +62,7 @@ class Plugin
      */
     public function run()
     {
-        $siteHealth = $this->container->make('health.manager');
+        $this->container->make('health.manager');
     }
 
     /**
@@ -88,11 +110,11 @@ class Plugin
     public function defineContainerServices() : void
     {
         $this->builder->addDefinitions([
-            \TinyPixel\SiteHealth\SiteHealthManager::class => autowire(),
-            \TinyPixel\SiteHealth\SiteAuditManager::class => autowire(),
-            \TinyPixel\SiteHealth\SiteReportManager::class => autowire(),
-            \TinyPixel\SiteHealth\Audits\BedrockPluginAudits::class => autowire(),
-            \TinyPixel\SiteHealth\Audits\AuditBuilder::class => autowire(),
+            AuditBuilder::class        => autowire(),
+            BedrockPluginAudits::class => autowire(),
+            SiteHealthManager::class   => autowire(),
+            SiteReportManager::class   => autowire(),
+            SiteAuditManager::class    => autowire()->constructor(),
         ]);
     }
 
@@ -104,19 +126,13 @@ class Plugin
     public function defineContainerAliases() : void
     {
         $this->builder->addDefinitions([
-            'health.manager' =>
-                get(\TinyPixel\SiteHealth\SiteHealthManager::class),
-            'site.reports.manager' =>
-                get(\TinyPixel\SiteHealth\SiteReportManager::class),
-            'site.audits.manager' =>
-                get(\TinyPixel\SiteHealth\SiteAuditManager::class),
-            'site.audit.builder' =>
-                get(\TinyPixel\SiteHealth\Audits\AuditBuilder::class),
-            'site.audits.bedrock.plugins' =>
-                get(\TinyPixel\SiteHealth\Audits\BedrockPluginAudits::class),
-            'site.audits.all' => [
-                'site.audits.bedrock.plugins',
-            ],
+            'health.manager'  => get(HealthManager::class),
+            'audits.manager'  => get(AuditManager::class),
+            'reports.manager' => get(ReportManager::class),
+            'audits.builder'  => get(AuditBuilder::class),
+            'audits.bedrock.plugins' => get(BedrockPluginAudits::class),
+            'audits'  => $this->audits,
+            'reports' => $this->reports,
         ]);
     }
 }

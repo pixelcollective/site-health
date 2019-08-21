@@ -2,11 +2,13 @@
 
 namespace TinyPixel\SiteHealth;
 
+use \WP_Theme;
+
 /**
  * Site Report Manager.
  *
  */
-class SiteReportManager
+class ReportManager
 {
     /**
      * Info
@@ -19,20 +21,20 @@ class SiteReportManager
      * @param  array $info
      * @return array
      */
-    public function debugInfo() : array
+    public function generateReports() : array
     {
-        $this->info['theme'] = $this->themeInfo($this->refs['getTheme']());
+        $this->info['theme'] = $this->themeInfo(\wp_get_theme());
 
-        return $info;
+        return $this->info;
     }
 
     /**
      * Add theme info.
      *
-     * @param  array $theme
+     * @param  WP_Theme $theme
      * @return array
      */
-    protected function themeInfo($theme) : array
+    protected function themeInfo(WP_Theme $theme) : array
     {
         return [
             'label'  => __('Theme', 'roots'),

@@ -61,9 +61,7 @@ class BedrockPluginAudits
             return [
                 'label' => __('Bedrock: Autoloader plugin present.', 'roots'),
                 'description' => __('Confirms that <code>bedrock-autoloader.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-                'status' => $autoloaderAccessible ?
-                    'good' :
-                    'recommended',
+                'status' => $autoloaderAccessible ? 'good' : 'recommended',
                 'badge'  => $autoloaderAccessible ?
                     ['label' => __('Autoloader found', 'roots'), 'color' => 'green' ] :
                     ['label' => __('Autoloader not found', 'roots'), 'color' => 'red'],
@@ -83,9 +81,7 @@ class BedrockPluginAudits
             return [
                 'label' => __('Bedrock: Disallow indexing plugin present', 'sage'),
                 'description' => __('Confirms that <code>disallow-indexing.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-                'status' => $disallowIndexingAccessible ?
-                    'good' :
-                    'recommended',
+                'status' => $disallowIndexingAccessible ? 'good' : 'recommended',
                 'badge'  => $disallowIndexingAccessible ?
                     ['label' => __('Disallow indexing plugin found'), 'color' => 'green'] :
                     ['label' => __('Disallow indexing plugin not found'), 'color' => 'red'],
@@ -106,9 +102,7 @@ class BedrockPluginAudits
         return [
             'label' => __('Bedrock: Register theme directory plugin present', 'sage'),
             'description' => __('Confirms that <code>register-theme-directory.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-            'status' => $registerThemeDirAccessible ?
-                'good' :
-                'recommended',
+            'status' => $registerThemeDirAccessible ? 'good' : 'recommended',
             'badge'  => $registerThemeDirAccessible ?
                 ['label' => __('Register theme directory plugin found'), 'color' => 'green'] :
                 ['label' => __('Register theme directory plugin not found'), 'color' => 'red'],

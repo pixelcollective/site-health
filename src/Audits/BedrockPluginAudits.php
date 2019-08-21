@@ -22,6 +22,19 @@ class BedrockPluginAudits
     public static $muPlugins = __DIR__ . '/../../..';
 
     /**
+     * Audit builder
+     */
+    public $auditBuilder;
+
+    /**
+     *
+     */
+    public function __construct(\TinyPixel\SiteHealth\Audits\AuditBuilder $auditBuilder)
+    {
+        $this->builder = $auditBuilder;
+    }
+
+    /**
      * Invoke
      *
      * @return array
@@ -96,17 +109,21 @@ class BedrockPluginAudits
      */
     public function registerThemeDirectory()
     {
+        $test    = $this->isAccessible(self::$muPlugins, 'register-theme-directory');
+        $results = new $this->builder();
 
-        $registerThemeDirAccessible = $this->isAccessible(self::$muPlugins, 'register-theme-directory');
+        $results->test('register-theme-directory')
+                ->label(__('Bedrock: Register theme directory plugin present', 'sage'))
+                ->description(__(
+                    'Confirms that <code>register-theme-directory.php</code> is accessible
+                    from the <code>mu-plugins</code> directory.', 'roots'))
+                ->condition($test)->success(['status' => 'good', 'badge' => [
+                    'label' => __('Register theme directory plugin found', 'sage'),
+                    'color' => 'green']])
+                ->fail(['status' => 'recommend', 'badge' => [
+                    'label' => __('Register theme directory plugin not found', 'sage'),
+                    'color' => 'red']]);
 
-        return [
-            'label' => __('Bedrock: Register theme directory plugin present', 'sage'),
-            'description' => __('Confirms that <code>register-theme-directory.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-            'status' => $registerThemeDirAccessible ? 'good' : 'recommended',
-            'badge'  => $registerThemeDirAccessible ?
-                ['label' => __('Register theme directory plugin found'), 'color' => 'green'] :
-                ['label' => __('Register theme directory plugin not found'), 'color' => 'red'],
-            'test' => 'register-theme-directory'
-        ];
+        return $results->make();
     }
 }

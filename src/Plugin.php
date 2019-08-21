@@ -2,15 +2,10 @@
 
 namespace TinyPixel\SiteHealth;
 
-use \ApcCache;
 use function DI\get;
 use function DI\autowire;
-use DI\ContainerBuilder;
 use DI\Container;
-use TinyPixel\SiteHealth\SiteHealth;
-use TinyPixel\SiteHealth\Info;
-use TinyPixel\SiteHealth\Tests;
-use TinyPixel\SiteHosts\Audits\BedrockPlugins;
+use DI\ContainerBuilder;
 
 /**
  * Plugin runtime
@@ -21,14 +16,14 @@ class Plugin
     /**
      * Builder
      *
-     * @param \TinyPixel\SiteHealth\Builder
+     * @param \DI\Builder
      */
     protected $builder;
 
     /**
      * Container
      *
-     * @param \TinyPixel\SiteHealth\Container
+     * @param \DI\Container
      */
     protected $container;
 
@@ -37,7 +32,7 @@ class Plugin
      */
     public function __construct()
     {
-        $this->builder = new ContainerBuilder();
+        $this->builder = new \DI\ContainerBuilder();
     }
 
     /**
@@ -97,6 +92,7 @@ class Plugin
             \TinyPixel\SiteHealth\SiteAuditManager::class => autowire(),
             \TinyPixel\SiteHealth\SiteReportManager::class => autowire(),
             \TinyPixel\SiteHealth\Audits\BedrockPluginAudits::class => autowire(),
+            \TinyPixel\SiteHealth\Audits\AuditBuilder::class => autowire(),
         ]);
     }
 
@@ -114,6 +110,8 @@ class Plugin
                 get(\TinyPixel\SiteHealth\SiteReportManager::class),
             'site.audits.manager' =>
                 get(\TinyPixel\SiteHealth\SiteAuditManager::class),
+            'site.audit.builder' =>
+                get(\TinyPixel\SiteHealth\Audits\AuditBuilder::class),
             'site.audits.bedrock.plugins' =>
                 get(\TinyPixel\SiteHealth\Audits\BedrockPluginAudits::class),
             'site.audits.all' => [

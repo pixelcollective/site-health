@@ -74,7 +74,7 @@ class AuditBuilder
      */
     public function success($success)
     {
-        if($this->condition == true) {
+        if ($this->condition == true) {
             $this->badge  = $success['badge'];
             $this->status = $success['status'];
         }

@@ -2,70 +2,16 @@
 
 namespace TinyPixel\SiteHealth\Audits;
 
-use TinyPixel\SiteHealth\Audits\Concerns\Checks;
-use TinyPixel\SiteHealth\Audits\AuditBuilder;
+use TinyPixel\SiteHealth\Audits\BaseAudit;
 
 /**
- * Tests: Bedrock plugins.
+ * Audit: Bedrock plugins.
  *
  * @version 1.0.0
  * @since   1.0.0
  */
-class BedrockPluginAudits
+class BedrockPluginAudits extends BaseAudit
 {
-    use Checks;
-
-    /**
-     * Base directory for MU Plugins.
-     *
-     * @var string
-     */
-    public static $muPlugins = __DIR__ . '/../../..';
-
-    /**
-     * Audit builder
-     */
-    public $auditBuilder;
-
-    /**
-     * Constructor.
-     *
-     */
-    public function __construct(AuditBuilder $auditBuilder)
-    {
-        $this->builder = $auditBuilder;
-
-        return $this;
-    }
-
-    /**
-     * Run audits and return arrayed results.
-     *
-     * @return array
-     */
-    public function run(array $results = [])
-    {
-        if ($this->shouldAudit('disallow-indexing') == true) {
-            $results['disallow-indexing'] = [
-                'test'  => [$this, 'disallowIndexing'],
-            ];
-        }
-
-        if ($this->shouldAudit('register-theme-directory') == true) {
-            $results['register-theme-directory'] = [
-                'test'  => [$this, 'registerThemeDirectory'],
-            ];
-        }
-
-        if ($this->shouldAudit('autoloader') == true) {
-            $results['autoloader'] = [
-                'test'  => [$this, 'autoloader'],
-            ];
-        }
-
-        return $results;
-    }
-
     /**
      * Test for bedrock-autoloader.php presence.
      *
@@ -73,17 +19,17 @@ class BedrockPluginAudits
      */
     public function autoloader()
     {
-            $autoloaderAccessible = $this->isAccessible(self::$muPlugins, 'bedrock-autoloader');
+        $autoloaderAccessible = $this->isAccessible(self::$muPlugins, 'bedrock-autoloader');
 
-            return [
-                'label' => __('Bedrock: Autoloader plugin present.', 'roots'),
-                'description' => __('Confirms that <code>bedrock-autoloader.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-                'status' => $autoloaderAccessible ? 'good' : 'recommended',
-                'badge'  => $autoloaderAccessible ?
-                    ['label' => __('Autoloader found', 'roots'), 'color' => 'green' ] :
-                    ['label' => __('Autoloader not found', 'roots'), 'color' => 'red'],
-                'test' => 'autoloader'
-            ];
+        return [
+            'label' => __('Bedrock: MU-Plugin autoloader found.', 'sage'),
+            'description' => __('Confirms that <code>bedrock-autoloader.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
+            'status' => $autoloaderAccessible ? 'good' : 'recommended',
+            'badge'  => $autoloaderAccessible ?
+                ['label' => __('Autoloader found', 'roots'), 'color' => 'green' ] :
+                ['label' => __('Autoloader not found', 'roots'), 'color' => 'red'],
+            'test' => __FUNCTION__,
+        ];
     }
 
     /**
@@ -93,17 +39,17 @@ class BedrockPluginAudits
      */
     public function disallowIndexing()
     {
-            $disallowIndexingAccessible = $this->isAccessible(self::$muPlugins, 'disallow-indexing');
+        $disallowIndexingAccessible = $this->isAccessible(self::$muPlugins, 'disallow-indexing');
 
-            return [
-                'label' => __('Bedrock: Disallow indexing plugin present', 'sage'),
-                'description' => __('Confirms that <code>disallow-indexing.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
-                'status' => $disallowIndexingAccessible ? 'good' : 'recommended',
-                'badge'  => $disallowIndexingAccessible ?
-                    ['label' => __('Disallow indexing plugin found'), 'color' => 'green'] :
-                    ['label' => __('Disallow indexing plugin not found'), 'color' => 'red'],
-                'test' => 'disallow-indexing',
-            ];
+        return [
+            'label' => __('Bedrock: Disallow indexing plugin present', 'sage'),
+            'description' => __('Confirms that <code>disallow-indexing.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'),
+            'status' => $disallowIndexingAccessible ? 'good' : 'recommended',
+            'badge'  => $disallowIndexingAccessible ?
+                ['label' => __('Disallow indexing plugin found'), 'color' => 'green'] :
+                ['label' => __('Disallow indexing plugin not found'), 'color' => 'red'],
+            'test' => __FUNCTION__,
+        ];
     }
 
     /**
@@ -114,19 +60,20 @@ class BedrockPluginAudits
     public function registerThemeDirectory()
     {
         $test    = $this->isAccessible(self::$muPlugins, 'register-theme-directory');
-        $results = new $this->builder();
 
-        $results->test('register-theme-directory')
-                ->label(__('Bedrock: Register theme directory plugin present', 'sage'))
-                ->description(__(
-                    'Confirms that <code>register-theme-directory.php</code> is accessible
-                    from the <code>mu-plugins</code> directory.', 'roots'))
-                ->condition($test)->success(['status' => 'good', 'badge' => [
+        ($results = new $this->builder())
+            ->test(__FUNCTION__)
+            ->label(__('Bedrock: Register theme directory plugin present', 'sage'))
+            ->description(__('Confirms that <code>register-theme-directory.php</code> is accessible from the <code>mu-plugins</code> directory.', 'roots'))
+            ->condition($test)
+                ->success(['status' => 'good', 'badge' => [
                     'label' => __('Register theme directory plugin found', 'sage'),
-                    'color' => 'green']])
+                    'color' => 'green'
+                ]])
                 ->fail(['status' => 'recommend', 'badge' => [
                     'label' => __('Register theme directory plugin not found', 'sage'),
-                    'color' => 'red']]);
+                    'color' => 'red'
+                ]]);
 
         return $results->make();
     }

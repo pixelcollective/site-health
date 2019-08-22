@@ -4,6 +4,7 @@ namespace TinyPixel\SiteHealth;
 
 use DI\Container;
 use TinyPixel\SiteHealth\Audits\AuditBuilder;
+use TinyPixel\SiteHealth\Audits\Concerns\Checks;
 
 /**
  * Site audit manager.
@@ -11,6 +12,8 @@ use TinyPixel\SiteHealth\Audits\AuditBuilder;
  */
 class AuditManager
 {
+    use Checks;
+
     /**
      * Audits
      *
@@ -37,39 +40,43 @@ class AuditManager
         $this->builder = $builder;
         $this->container = $container;
 
-        $this->definitions = $container->make('audits');
+        $this->suites = $this->container->make('audits');
+
+        $this->results = [
+            'direct' => [],
+            'async'  => [],
+        ];
     }
 
     /**
-     * Run tests
+     * Run audits and return arrayed results.
      *
-     * @param  array $audits
      * @return array
      */
-    public function performAudits()
+    public function runAudits($audits)
     {
-        foreach ($this->definitions as $type => $audits) {
-            $this->results[$type] = $this->runTests($audits);
-        }
+        array_map(
+            [$this, 'runTests'],
+            array_keys($this->suites),
+            array_values($this->suites),
+        );
 
         return $this->results;
     }
 
     /**
-     * Direct tests
+     * Run an audit's tests.
      *
      * @return array
      */
-    protected function runTests($audits = [])
+    public function runTests(string $suite, array $tests)
     {
-        $testResults = [];
+        $class = $this->container->make($suite);
 
-        if ($audits) {
-            foreach ($audits as $audit) {
-                $testResults = $this->container->make($audit)->run($testResults);
-            }
+        foreach (array_map([$class, 'run'], $tests) as $result) {
+            $this->results['direct'][$result['label']] = [
+                'test' => $result['function']
+            ];
         }
-
-        return $testResults;
     }
 }

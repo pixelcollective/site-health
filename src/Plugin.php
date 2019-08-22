@@ -38,8 +38,11 @@ class Plugin
      * @param array
      */
     protected $audits = [
-        'direct' => ['audits.bedrock.plugins'],
-        'async'  => null,
+        BedrockPluginAudits::class => [
+            'disallowIndexing',
+            'autoloader',
+            'registerThemeDirectory',
+        ],
     ];
 
     /**
